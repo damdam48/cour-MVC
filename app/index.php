@@ -1,13 +1,17 @@
 <?php
 
 use App\Autoloader;
+use App\Models\User;
 
-require_once 'App\Autoloader.php';
+require_once '/app/Autoloader.php';
 Autoloader::register();
 
 
 
+$users = (new User)->findBy(['firsName' => 'dede', 'lastName' => 'le cochon']);
 
+
+var_dump($users)
 
 
 

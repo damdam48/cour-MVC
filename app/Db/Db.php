@@ -12,12 +12,12 @@ class Db extends PDO
     private const DB_NAME = "demo_mvc";
     private const DB_USER = "root";
     private const DB_PASSWORD = "root";
+    private static ?Db $instance = null;
 
-    public function __construct(
-        private ?Db $instance = null,
-    ) {
+    public function __construct()
+    {
         try {
-            $dsn = "mysql:host" . self::DB_HOST . ";dbname=" . self::DB_NAME . ';charset=utf8mb4';
+            $dsn = "mysql:host=" . self::DB_HOST . ";dbname=" . self::DB_NAME . ';charset=utf8mb4';
 
             parent::__construct($dsn, self::DB_USER, self::DB_PASSWORD,);
 
@@ -31,8 +31,7 @@ class Db extends PDO
     public static function getInstance(): Db
     {
         if (self::$instance === null) {
-            self:: $instance = new Db();
-
+            self::$instance = new Db();
         }
         return self::$instance;
     }
