@@ -8,15 +8,15 @@ Autoloader::register();
 
 
 
-$user = (new User)->find(1);
+$user = (new User)->findAll();
 
-$user = (new User)->hydrate($user);
-$user->setPassword(
-    password_hash('1234', PASSWORD_ARGON2I)
-)
-    ->update();
+// $user = (new User)->hydrate($user);
+// $user->setPassword(
+//     password_hash('1234', PASSWORD_ARGON2I)
+// )
+//     ->update();
 
-    
+
 var_dump($user);
 
 

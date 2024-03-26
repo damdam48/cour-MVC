@@ -20,20 +20,25 @@ abstract class Models extends Db
      */
     public function findAll(): array
     {
-        return $this->runQuery("SELECT * FROM $this->table")->fetchAll();
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table")->fetchAll()
+
+        );
     }
 
     /**
      * find One data in table filter by ID
      *
      * @param integer $id
-     * @return array|boolean
+     * @return bool|static
      */
-    public function find(int $id): array|bool
+    public function find(int $id): bool|static
     {
-        return $this->runQuery("SELECT * FROM $this->table WHERE id = :id", [
-            'id' => $id,
-        ])->fetch();
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table WHERE id = :id", [
+                'id' => $id,
+            ])->fetch()
+        );
     }
 
 
@@ -53,8 +58,10 @@ abstract class Models extends Db
             $params[$key] = $value;
         }
         $champStr = implode(' AND ', $champs);
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table WHERE $champStr", $params)->fetchAll()
 
-        return $this->runQuery("SELECT * FROM $this->table WHERE $champStr", $params)->fetchAll();
+        );
     }
 
 
@@ -75,8 +82,10 @@ abstract class Models extends Db
             $params[$key] = $value;
         }
         $champStr = implode(' AND ', $champs);
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table WHERE $champStr", $params)->fetch()
 
-        return $this->runQuery("SELECT * FROM $this->table WHERE $champStr", $params)->fetch();
+        );
     }
 
 
@@ -146,6 +155,24 @@ abstract class Models extends Db
 
 
 
+    public function fetchHydrate(mixed $query): static|array|bool
+    {
+        if (is_array($query) && count($query) > 1) {
+
+            $data = array_map(function (object $object) {
+                return (new static)->hydrate($object);
+            }, $query);
+
+            return $data;
+        } elseif (!empty($query)) {
+            return (new static())->hydrate($query);
+        } else {
+            return $query;
+        }
+    }
+
+
+
     /**
      * Méthode d'hydratation d'un objet à partir d'un tableau associatif
      *      $donnees = [
@@ -162,7 +189,7 @@ abstract class Models extends Db
      * @param array|object $donnees
      * @return static
      */
-    public function hydrate(array $data): static
+    public function hydrate(array|object $data): static
     {
         // on boucle sur le tabeau data
         foreach ($data as $key => $value) {
@@ -175,9 +202,6 @@ abstract class Models extends Db
         }
         return $this;
     }
-
-
-
 
 
     /**
