@@ -38,7 +38,7 @@ abstract class Models extends Db
 
 
     /**
-     * find data in datebasez with multiple filter
+     * find data in datebasez with dynamic filter
      *
      * @param array $filters
      * @return array
@@ -56,6 +56,127 @@ abstract class Models extends Db
 
         return $this->runQuery("SELECT * FROM $this->table WHERE $champStr", $params)->fetchAll();
     }
+
+
+
+    /**
+     * find one entry in datebase with dynamic filter
+     *
+     * @param array $filters
+     * @return array|bool
+     */
+    public function findOneBy(array $filters): array|BOOL
+    {
+        $champs = [];
+        $params = [];
+
+        foreach ($filters as $key => $value) {
+            $champs[] = "$key = :$key";
+            $params[$key] = $value;
+        }
+        $champStr = implode(' AND ', $champs);
+
+        return $this->runQuery("SELECT * FROM $this->table WHERE $champStr", $params)->fetch();
+    }
+
+
+    /**
+     * create
+     *
+     * @return PDOStatement|boolean
+     */
+    public function create(): PDOStatement|bool
+    {
+        // INSERT INTO users(firsName, lastName, email, password) VALUE (:firsName, :lastName, :email, :password)
+        $champs = [];
+        $markers = [];
+        $params = [];
+
+        // on boucle sur l'objet pour remplis dynamiquement les tableaux
+        foreach ($this as $key => $value) {
+            // on verifie que la valeur n'est pas null et que la propriété
+            //n'est pas table (pas un champ en BDD)
+            if ($key !== 'table' && $value !== null) {
+                $champs[] = $key;
+                $markers[] = ":$key";
+                $params[$key] = $value;
+            }
+        }
+        //on transforme les tableaux en chaine de caractère pour les integrer
+        // dnas la requete sql
+        $strChamps = implode(', ', $champs);
+        $strMarkers = implode(', ', $markers);
+        var_dump($strChamps, $strMarkers);
+
+        return $this->runQuery(
+            "INSERT INTO $this->table($strChamps) VALUES ($strMarkers)",
+            $params,
+        );
+    }
+
+
+    /**
+     * Update date in database
+     *
+     * @return PDOStatement|boolean
+     */
+    public function update(): PDOStatement|bool
+    {
+        // UPDATE user SET firName = :firName, lastName = :lastName WHERE id = :id
+        $champs = [];
+        $params = [];
+
+        foreach ($this as $key => $value) {
+            if ($key !== 'table' && $key !== 'id' && $value !== null) {
+                $champs[] = "$key = :$key";
+                $params[$key] = $value;
+            }
+        }
+        $strChamps = implode(', ', $champs);
+
+        /**
+         * @var User $this
+         */
+        $params['id'] = $this->id;
+        return $this->runQuery(
+            "UPDATE $this->table SET $strChamps WHERE id = :id",
+            $params,
+        );
+    }
+
+
+
+    /**
+     * Méthode d'hydratation d'un objet à partir d'un tableau associatif
+     *      $donnees = [
+     *          'titre' => "Titre de l'objet",
+     *          'description' => 'Desc',
+     *          'actif' => true,
+     *      ];
+     * 
+     *      RETOURNE:
+     *          $article->setTitre('Titre de l'objet')
+     *              ->setDescription('Desc')
+     *              ->setActif(true);
+     *
+     * @param array|object $donnees
+     * @return static
+     */
+    public function hydrate(array $data): static
+    {
+        // on boucle sur le tabeau data
+        foreach ($data as $key => $value) {
+            // on crer dynamiquement le nom du seter
+            $setter = 'set' . ucfirst($key);
+            // on verifie que le setter exit dans l'objet
+            if (method_exists($this, $setter)) {
+                $this->$setter($value);
+            }
+        }
+        return $this;
+    }
+
+
 
 
 
