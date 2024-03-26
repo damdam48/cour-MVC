@@ -1,9 +1,16 @@
 <?php
 
-namespace app\Core;
+namespace App\Core;
 
 class Main
 {
+
+    public function __construct(
+        private Routeur $routeur = new Routeur(),
+
+    ) {
+    }
+
     public function start(): void
     {
         $uri = $_GET['q'];
@@ -11,8 +18,10 @@ class Main
             $uri = substr($uri, 0, -1);
 
             http_response_code(301);
-            header("location: /$uri");
+            header("location: /$uri", true);
             exit();
         }
+
+        $this->routeur->handle($uri, $_SERVER['REQUEST_METHOD']);
     }
 }
