@@ -8,14 +8,9 @@ Autoloader::register();
 
 
 
-$user = (new User)->findAll();
+$user = (new User)->find(4);
 
-// $user = (new User)->hydrate($user);
-// $user->setPassword(
-//     password_hash('1234', PASSWORD_ARGON2I)
-// )
-//     ->update();
-
+$user->delete();
 
 var_dump($user);
 

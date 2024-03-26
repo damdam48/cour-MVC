@@ -153,8 +153,31 @@ abstract class Models extends Db
         );
     }
 
+    /**
+     * DELETE a data from DB
+     *
+     * @return PDOStatement|boolean
+     */
+    public function delete(): PDOStatement|bool
+    {
+        // delete from users WHERE id = :id
+        /**
+         * @var User $this
+         */
+        return $this->runQuery(
+            "DELETE FROM $this->table WHERE id = :id",
+            ['id' => $this->id]
+        );
+    }
 
 
+    /**
+     * methode pour transformer automatique les donnees transmises par PDO
+     * en recherche DB. transforme un objet (StdClass) en instance de notre model(new User) 
+     *
+     * @param mixed $query
+     * @return static|array|boolean
+     */
     public function fetchHydrate(mixed $query): static|array|bool
     {
         if (is_array($query) && count($query) > 1) {
