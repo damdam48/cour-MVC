@@ -4,6 +4,7 @@ use App\Autoloader;
 use App\Models\Article;
 use App\Models\User;
 use App\Core\main;
+
 define('ROOT', dirname(__DIR__));
 
 require_once  ROOT . '/Autoloader.php';

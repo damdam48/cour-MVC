@@ -22,6 +22,15 @@ class Main
             exit();
         }
 
+        $this->initRoute();
+
         $this->routeur->handle($uri, $_SERVER['REQUEST_METHOD']);
+    }
+
+    private function initRoute(): void
+    {
+        $Files = glob(realpath(ROOT . '/Controllers') . '/*.php');
+        $Files2 = glob(realpath(ROOT . '/Controllers') . '/**/*.php');
+        var_dump($Files, $Files2);
     }
 }

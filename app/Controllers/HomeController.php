@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Core\Route;
+
 class HomeController
 {
     #[Route('/', 'app.home', ['GET'])]
