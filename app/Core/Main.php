@@ -31,6 +31,8 @@ class Main
     {
         $Files = glob(realpath(ROOT . '/Controllers') . '/*.php');
         $Files2 = glob(realpath(ROOT . '/Controllers') . '/**/*.php');
+
+        $Files = array_merge_recursive($Files, $Files2);
         var_dump($Files, $Files2);
     }
 }
