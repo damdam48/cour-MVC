@@ -111,6 +111,26 @@ abstract class Form
 
 
     /**
+     * add boutton
+     *
+     * @param string $text
+     * @param array $attributs
+     * @return self
+     */
+    public function addButton(string $text, array $attributs = []): self
+    {
+        $this->formCode .= "<button";
+        $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
+
+        $this->formCode .= "$text</button>";
+
+        return $this;
+    }
+
+
+
+
+    /**
      * Ajoute les attributs envoyés à la balise html
      *
      * @param array $attributs Tableau associatif (['class' => 'form-control', 'required' => true])

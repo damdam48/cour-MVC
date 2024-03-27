@@ -220,7 +220,12 @@ abstract class Models extends Db
             $setter = 'set' . ucfirst($key);
             // on verifie que le setter exit dans l'objet
             if (method_exists($this, $setter)) {
-                $this->$setter($value);
+                if ($key === 'roles') {
+                    $value = $value ? json_decode($value) : null;
+                    $this->$setter($value);
+                } else {
+                    $this->$setter($value);
+                }
             }
         }
         return $this;

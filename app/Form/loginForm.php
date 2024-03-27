@@ -5,10 +5,10 @@ use App\Core\Form;
 
 class LoginForm extends Form
 {
-    public function __construct()
+    public function __construct(string $action)
     {
         $this
-            ->startForm('/login', 'POST', [
+            ->startForm($action, 'POST', [
                 'class' => 'card p-3 w-50 mx-auto',
                 'id' => 'form-login',
                 'formnovalidate' => true,
@@ -30,8 +30,12 @@ class LoginForm extends Form
                 'class' => 'form-control',
                 'id' => 'password',
                 'placeholder' => 'S45464',
-                'required' => 'form-true',
-
+                'required' => true,
+            ])
+            ->endDiv()
+            ->addButton('Connexion', [
+                'class' => 'btn btn-primary',
+                'type' => 'submit',
             ])
             ->endForm();
     }
