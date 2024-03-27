@@ -25,9 +25,15 @@ class Routeur
 
     public function handle(string $url, string $method): void
     {
+        
         // on boucle sur le tableau des routes disponibles
         foreach ($this->routes as $route) {
-            if ($route['url'] === $url && in_array($method, $route['methods'])) {
+            if (
+                preg_match("#^" . $route['url'] . "$#", $url, $matches)
+                && in_array($method, $route['methods'])
+
+            ) {
+
                 // on recupere le nom du controleur dans la route
                 $controller = $route['controller'];
 
@@ -35,8 +41,13 @@ class Routeur
                 $action = $route['action'];
 
                 $controller = new $controller();
+
+                //on recupere les parametre potensielle de url
+                $params = array_slice($matches, 1);
+
+
                 // on execute la methode dans le controller
-                $controller->$action();
+                $controller->$action(...$params);
 
                 return;
             }
