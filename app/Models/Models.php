@@ -108,7 +108,12 @@ abstract class Models extends Db
             if ($key !== 'table' && $value !== null) {
                 $champs[] = $key;
                 $markers[] = ":$key";
-                $params[$key] = $value;
+                
+                if (is_array($value)) {
+                    $params[$key] = json_encode($value);
+                } else {
+                    $params[$key] = $value;
+                }
             }
         }
         //on transforme les tableaux en chaine de caractère pour les integrer
@@ -138,7 +143,12 @@ abstract class Models extends Db
         foreach ($this as $key => $value) {
             if ($key !== 'table' && $key !== 'id' && $value !== null) {
                 $champs[] = "$key = :$key";
-                $params[$key] = $value;
+
+                if (is_array($value)) {
+                    $params[$key] = json_encode($value);
+                } else {
+                    $params[$key] = $value;
+                }
             }
         }
         $strChamps = implode(', ', $champs);

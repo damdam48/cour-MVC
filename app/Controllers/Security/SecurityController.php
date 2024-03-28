@@ -3,8 +3,8 @@
 namespace App\Controllers\Security;
 
 use App\Core\Route;
-use App\Form\RegisterForm;
 use App\Models\User;
+use App\Form\UserForm;
 use App\Form\LoginForm;
 use App\Core\BaseController;
 
@@ -53,7 +53,7 @@ class SecurityController extends BaseController
     #[Route('/register', 'app.register', ['GET', 'POST'])]
     public function register(): void
     {
-        $form = new RegisterForm ('/register' );
+        $form = new UserForm ('/register' );
 
         if ($form->validate($_POST, ['email', 'firsName', 'lastName', 'password'])) {
             $firsName = trim(strip_tags($_POST['firsName']));
@@ -63,14 +63,14 @@ class SecurityController extends BaseController
 
             // Vérification des contraintes
             if ($email) {
-                if ($email !== (new User)->findByEmail($email)) {
+                if (!(new User)->findByEmail($email)) {
                     (new User)
                     ->setFirsName($firsName)
                     ->setLastName($lastName)
                     ->setEmail($email)
                     ->setPassword($password)
                     ->create();
-                    
+
                     $_SESSION['messages']['success'] = "vous être bien inscrit a l'application";
                     $this->redirect('/login');
                 }else {

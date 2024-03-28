@@ -143,10 +143,12 @@ abstract class Form
         $attributsCouts = ['checked', 'selected', 'required', 'disabled', 'readonluy', 'multiple', 'autofocus', 'novalidate', 'formnovalidate'];
 
         foreach ($attributs as $key => $value) {
-            if (in_array($key, $attributsCouts)) {
-                $str .= " $key";
-            } else {
-                $str .= " $key=\"$value\"";
+            if ($value) {
+                if (in_array($key, $attributsCouts)) {
+                    $str .= " $key";
+                } else {
+                    $str .= " $key=\"$value\"";
+                }
             }
         }
         return $str;

@@ -124,6 +124,15 @@ class User extends Models
                 return $this;
         }
 
+
+        public function getFullName(): string
+        {
+                return "$this->firsName $this->lastName";
+        }
+
+
+
+
         /**
          * Get the value of email
          *
