@@ -3,6 +3,7 @@
 namespace App\Controllers\Security;
 
 use App\Core\Route;
+use App\Form\RegisterForm;
 use App\Models\User;
 use App\Form\LoginForm;
 use App\Core\BaseController;
@@ -37,6 +38,55 @@ class SecurityController extends BaseController
                 'title' => 'Se connecter',
             ]
 
+        ]);
+    }
+    #[Route('/logout', 'app.logout', ['GET'])]
+    public function logout(): void
+    {
+        if (!empty($_SESSION['user'])) {
+            unset($_SESSION['user']);
+        }
+
+        $this->redirect('/');
+    }
+
+    #[Route('/register', 'app.register', ['GET', 'POST'])]
+    public function register(): void
+    {
+        $form = new RegisterForm ('/register' );
+
+        if ($form->validate($_POST, ['email', 'firsName', 'lastName', 'password'])) {
+            $firsName = trim(strip_tags($_POST['firsName']));
+            $lastName = trim(strip_tags($_POST['lastName']));
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+            $password = password_hash($_POST['password'], PASSWORD_ARGON2I);
+
+            // Vérification des contraintes
+            if ($email) {
+                if ($email !== (new User)->findByEmail($email)) {
+                    (new User)
+                    ->setFirsName($firsName)
+                    ->setLastName($lastName)
+                    ->setEmail($email)
+                    ->setPassword($password)
+                    ->create();
+                    
+                    $_SESSION['messages']['success'] = "vous être bien inscrit a l'application";
+                    $this->redirect('/login');
+                }else {
+                    $_SESSION['messages']['danger'] = "L'email est deja utiliser par un autre compte";
+                }
+            }else {
+                $_SESSION['messages']['danger'] = "Veuillez renseigner un email valide";
+            }
+        }
+    
+
+        $this->render('Security/register.php', [
+            'form' => $form->createView(),
+            'meta' => [
+                'title' => 'Inscription',
+            ]
         ]);
     }
 }

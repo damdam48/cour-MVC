@@ -115,7 +115,7 @@ abstract class Models extends Db
         // dnas la requete sql
         $strChamps = implode(', ', $champs);
         $strMarkers = implode(', ', $markers);
-        var_dump($strChamps, $strMarkers);
+
 
         return $this->runQuery(
             "INSERT INTO $this->table($strChamps) VALUES ($strMarkers)",
