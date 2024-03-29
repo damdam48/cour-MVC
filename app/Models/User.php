@@ -49,6 +49,23 @@ class User extends Model
         return $this;
     }
 
+
+    public function findForSelect(): array
+    {
+
+        $users = $this->findAll();
+
+        $choices = [];
+
+        foreach ($users as $user) {
+            $choices[$user->getId()] = [
+                'label' => $user->getFullName(),
+            ];
+        }
+
+        return $choices;
+    }
+
     /**
      * Get the value of id
      *

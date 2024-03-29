@@ -3,11 +3,12 @@
 namespace App\Form;
 
 use App\Core\Form;
+use App\Models\User;
 use App\Models\Article;
 
 class ArticleForm extends Form
 {
-    public function __construct(string $action, ?Article $article = null)
+    public function __construct(string $action, ?Article $article = null, private User $user = new User)
     {
         $this
             ->startForm($action, 'POST', [
@@ -34,8 +35,24 @@ class ArticleForm extends Form
                 ],
                 $article ? $article->getContent() : null
             )
-            ->endDiv()
-            ->startDiv(['class' => 'mb-3 form-check'])
+            ->endDiv();
+
+            if ($article) {
+                $this
+                ->startDiv(['class' => 'mb-3'])
+                ->addLabel('user', 'Auteur', ['class' => 'form-label'])
+                ->addSelect(
+                    'user',
+                    $this->user->findForSelect(),
+                    [
+                        'class' => 'form-control',
+                        'id' => 'user',
+                    ]
+                )
+                ->endDiv();
+            }
+            
+            $this->startDiv(['class' => 'mb-3 form-check'])
             ->addInput('checkbox', 'enable', [
                 'class' => 'form-check-input',
                 'checked' => $article ? (bool) $article->getEnable() : null,

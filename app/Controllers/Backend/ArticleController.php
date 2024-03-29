@@ -6,6 +6,7 @@ use App\Core\BaseController;
 use App\Core\Route;
 use App\Form\ArticleForm;
 use App\Models\Article;
+use DateTime;
 
 class ArticleController extends BaseController
 {
@@ -17,6 +18,8 @@ class ArticleController extends BaseController
     #[Route('/admin/articles', 'admin.articles.index', ['GET'])]
     public function index(): void
     {
+        $_SESSION['token'] = bin2hex(random_bytes(80));
+
         $this->render('Backend/Articles/index.php', [
             'articles' => $this->article->findAll(),
             'meta' => [
@@ -27,6 +30,7 @@ class ArticleController extends BaseController
 
 
 
+    
     #[Route('/admin/articles/create', 'admin.articles.create', ['GET', 'POST'])]
     public function create(): void
     {
@@ -43,6 +47,7 @@ class ArticleController extends BaseController
                     ->setContent($content)
                     ->setEnable($enable)
                     ->setCreatedAt(new \DateTime())
+                    ->setUserId($_SESSION['user']['id'])
                     ->create();
 
                 $_SESSION['messages']['success'] = 'L\'article a bien été créé.';
@@ -62,7 +67,8 @@ class ArticleController extends BaseController
         ]);
     }
 
-    
+
+
 
     #[Route('/admin/articles/([0-9]+)/edit', 'admin.articles.edit', ['GET', 'POST'])]
     public function edit(int $id): void
@@ -70,30 +76,30 @@ class ArticleController extends BaseController
         $article = $this->article->find($id);
 
         if (!$article) {
-            $_SESSION['messages']['danger'] = "article non trouvé";
-
+            $_SESSION['messages']['danger'] = 'Cet article n\'existe pas.';
             $this->redirect('/admin/articles');
         }
 
         $form = new ArticleForm($_SERVER['REQUEST_URI'], $article);
 
-
-        if ($form->validate($_POST, ['title', 'content'])) {
+        if ($form->validate($_POST, ['title', 'content', 'user'])) {
             $title = trim(strip_tags($_POST['title']));
             $content = trim(strip_tags($_POST['content']));
             $enable = isset($_POST['enable']) ? 1 : 0;
+            $userId = $_POST['user'];
 
-
-            if (!$this->article->findOneBy(['title' => $title])) {
+            if ($title !== $article->getTitle() && $this->article->findOneBy(['title' => $title])) {
+                $_SESSION['messages']['danger'] = 'Un article avec ce titre existe déjà.';
+            } else {
                 $article
                     ->setTitle($title)
                     ->setContent($content)
                     ->setEnable($enable)
-                    ->setUpdatedAt(new \DateTime())
+                    ->setUpdatedAt(new DateTime())
+                    ->setUserId($userId)
                     ->update();
 
-
-                $_SESSION['messages']['success'] = 'L\'article a bien été mofdifier.';
+                $_SESSION['messages']['success'] = 'L\'article a bien été modifié.';
                 $this->redirect('/admin/articles');
             }
         } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -103,28 +109,28 @@ class ArticleController extends BaseController
         $this->render('Backend/Articles/edit.php', [
             'form' => $form->createView(),
             'meta' => [
-                'title' => 'Update d\'un article',
+                'title' => 'Modification de ' . $article->getTitle(),
             ]
         ]);
     }
 
-    #[Route('/admin/articles/delete', 'admin.users.delete', ['POST'])]
+
+
+
+    #[Route('/admin/articles/delete', 'admin.articles.delete', ['POST'])]
     public function delete(): void
     {
         $article = $this->article->find(!empty($_POST['id']) ? $_POST['id'] : 0);
 
-        if (!$article) {
-            $_SESSION['messages']['danger'] = 'Article not found';
-
-            $this->redirect('/admin/articles');
-        }
-
-        if (hash_equals($_SESSION['token'], !empty($_POST['token']) ? $_POST['token'] : '')) {
-            $article->delete();
-
-            $_SESSION['messages']['success'] = "Article supprimé avec succès";
+        if ($article) {
+            if (hash_equals($_SESSION['token'], $_POST['token'])) {
+                $article->delete();
+                $_SESSION['messages']['success'] = 'L\'article a bien été supprimé.';
+            } else {
+                $_SESSION['messages']['danger'] = 'Jeton de sécurité invalide.';
+            }
         } else {
-            $_SESSION['messages']['danger'] = "Invalide token CSRF";
+            $_SESSION['messages']['danger'] = 'Cet article n\'existe pas.';
         }
 
         $this->redirect('/admin/articles');
