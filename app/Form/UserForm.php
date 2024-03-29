@@ -16,13 +16,13 @@ class UserForm extends Form
             ])
             ->startDiv(['class' => 'row mb-3'])
             ->startDiv(['class' => 'col-md-6'])
-            ->addLabel('firsName', 'Prénom', ['class' => 'form-label'])
-            ->addInput('text', 'firsName', [
+            ->addLabel('firstName', 'Prénom', ['class' => 'form-label'])
+            ->addInput('text', 'firstName', [
                 'class' => 'form-control',
-                'id' => 'firsName',
+                'id' => 'firstName',
                 'placeholder' => 'John',
                 'required' => true,
-                'value' => $user ? $user->getFirsName() : null,
+                'value' => $user ? $user->getFirstName() : null,
             ])
             ->endDiv()
             ->startDiv(['class' => 'col-md-6'])

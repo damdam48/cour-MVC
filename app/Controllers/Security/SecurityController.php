@@ -2,11 +2,11 @@
 
 namespace App\Controllers\Security;
 
-use App\Core\Route;
-use App\Models\User;
-use App\Form\UserForm;
-use App\Form\LoginForm;
 use App\Core\BaseController;
+use App\Core\Route;
+use App\Form\LoginForm;
+use App\Form\UserForm;
+use App\Models\User;
 
 class SecurityController extends BaseController
 {
@@ -23,23 +23,20 @@ class SecurityController extends BaseController
 
                 $this->redirect('/');
             } else {
-                $_SESSION['messages']['danger'] = "Identifiants invalide";
+                $_SESSION['messages']['danger'] = "Identifiants invalides";
             }
         } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['messages']['danger'] = "Veuillez remplir tous les champs obligatoires";
         }
-
-
-
 
         $this->render('Security/login.php', [
             'form' => $form->createView(),
             'meta' => [
                 'title' => 'Se connecter',
             ]
-
         ]);
     }
+
     #[Route('/logout', 'app.logout', ['GET'])]
     public function logout(): void
     {
@@ -53,10 +50,11 @@ class SecurityController extends BaseController
     #[Route('/register', 'app.register', ['GET', 'POST'])]
     public function register(): void
     {
-        $form = new UserForm ('/register' );
+        $form = new UserForm('/register');
 
-        if ($form->validate($_POST, ['email', 'firsName', 'lastName', 'password'])) {
-            $firsName = trim(strip_tags($_POST['firsName']));
+        if ($form->validate($_POST, ['email', 'firstName', 'lastName', 'password'])) {
+            // Nettoyage des données
+            $firstName = trim(strip_tags($_POST['firstName']));
             $lastName = trim(strip_tags($_POST['lastName']));
             $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
             $password = password_hash($_POST['password'], PASSWORD_ARGON2I);
@@ -65,22 +63,22 @@ class SecurityController extends BaseController
             if ($email) {
                 if (!(new User)->findByEmail($email)) {
                     (new User)
-                    ->setFirsName($firsName)
-                    ->setLastName($lastName)
-                    ->setEmail($email)
-                    ->setPassword($password)
-                    ->create();
+                        ->setFirstName($firstName)
+                        ->setLastName($lastName)
+                        ->setEmail($email)
+                        ->setPassword($password)
+                        ->create();
 
-                    $_SESSION['messages']['success'] = "vous être bien inscrit a l'application";
+                    $_SESSION['messages']['success'] = "Vous êtes bien inscrit à l'application";
+
                     $this->redirect('/login');
-                }else {
-                    $_SESSION['messages']['danger'] = "L'email est deja utiliser par un autre compte";
+                } else {
+                    $_SESSION['messages']['danger'] = "L'email est déjà utilisé par un autre compte";
                 }
-            }else {
+            } else {
                 $_SESSION['messages']['danger'] = "Veuillez renseigner un email valide";
             }
         }
-    
 
         $this->render('Security/register.php', [
             'form' => $form->createView(),

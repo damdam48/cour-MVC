@@ -1,6 +1,4 @@
 <section class="container mt-2">
-    <h1>détail de l'article</h1>
-
     <h1 class="text-center">
         <?= $article->getTitle(); ?>
     </h1>

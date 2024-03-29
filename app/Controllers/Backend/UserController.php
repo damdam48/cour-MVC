@@ -18,6 +18,7 @@ class UserController extends BaseController
     public function index(): void
     {
         $_SESSION['token'] = bin2hex(random_bytes(80));
+
         $this->render('Backend/Users/index.php', [
             'users' => $this->user->findAll(),
             'meta' => [
@@ -39,8 +40,8 @@ class UserController extends BaseController
 
         $form = new UserForm($_SERVER['REQUEST_URI'], $user);
 
-        if ($form->validate($_POST, ['firsName', 'lastName', 'email'])) {
-            $firsName = trim(strip_tags($_POST['firsName']));
+        if ($form->validate($_POST, ['firstName', 'lastName', 'email'])) {
+            $firstName = trim(strip_tags($_POST['firstName']));
             $lastName = trim(strip_tags($_POST['lastName']));
             $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
             $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_ARGON2I) : null;
@@ -50,7 +51,7 @@ class UserController extends BaseController
                     $_SESSION['messages']['danger'] = "L'email est déjà utilisé par un autre compte";
                 } else {
                     $user
-                        ->setfirsName($firsName)
+                        ->setFirstName($firstName)
                         ->setLastName($lastName)
                         ->setEmail($email);
 
@@ -81,22 +82,22 @@ class UserController extends BaseController
     #[Route('/admin/users/delete', 'admin.users.delete', ['POST'])]
     public function delete(): void
     {
-        $user = $this->user->find(!empty($_POST['id']) ? $_POST['id'] : 0 );
+        $user = $this->user->find(!empty($_POST['id']) ? $_POST['id'] : 0);
 
         if (!$user) {
-            $_SESSION['messages']['danger'] = "User not found";
-            $this->redirect('/admin/users');
+            $_SESSION['messages']['danger'] = 'User not found';
 
+            $this->redirect('/admin/users');
         }
 
         if (hash_equals($_SESSION['token'], !empty($_POST['token']) ? $_POST['token'] : '')) {
             $user->delete();
 
-            $_SESSION['messages']['success'] = "User supprimer avec succès";
+            $_SESSION['messages']['success'] = "User supprimé avec succès";
         } else {
             $_SESSION['messages']['danger'] = "Invalide token CSRF";
         }
+
         $this->redirect('/admin/users');
     }
-
 }

@@ -4,5 +4,4 @@
         unset($_SESSION['messages'][$type]);
         ?>
     </div>
-
 <?php endforeach; ?>

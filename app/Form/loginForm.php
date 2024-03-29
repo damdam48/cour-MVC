@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Form;
+
 use App\Core\Form;
 
 class LoginForm extends Form
@@ -17,10 +18,10 @@ class LoginForm extends Form
             ->addLabel('email', 'Email', [
                 'class' => 'form-label required',
             ])
-            ->addinput('email', 'email', [
+            ->addInput('email', 'email', [
                 'class' => 'form-control',
                 'id' => 'email',
-                'placeholder' => 'dede@mail.com',
+                'placeholder' => 'john@example.com',
                 'required' => true,
             ])
             ->endDiv()
@@ -29,7 +30,7 @@ class LoginForm extends Form
             ->addInput('password', 'password', [
                 'class' => 'form-control',
                 'id' => 'password',
-                'placeholder' => 'S45464',
+                'placeholder' => 'S3CR3T',
                 'required' => true,
             ])
             ->endDiv()

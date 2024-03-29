@@ -3,7 +3,7 @@
 namespace App;
 
 /**
- * Classe Autoloader pour chargement dynamique de fichier
+ * Class Autoloader pour chargement dynamique de fichier
  */
 class Autoloader
 {

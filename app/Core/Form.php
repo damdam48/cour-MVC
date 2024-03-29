@@ -2,16 +2,17 @@
 
 namespace App\Core;
 
-
+/**
+ * Class générique de génération de formulaire
+ */
 abstract class Form
 {
     /**
-     * stock le code HTML du formulaire enb chaine de caractere
+     * Stock le code HTML du formulaire en chaine de caractère
      *
      * @var string
      */
     protected string $formCode = '';
-
 
     /**
      * Crée la balise d'ouverture du formulaire
@@ -24,13 +25,14 @@ abstract class Form
     public function startForm(string $action, string $method, array $attributs = []): self
     {
         $this->formCode .= "<form action=\"$action\" method=\"$method\"";
+
         $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
 
         return $this;
     }
 
     /**
-     * ferme la balise HTML FORM
+     * Ferme la balise HTML form
      *
      * @return self
      */
@@ -41,10 +43,8 @@ abstract class Form
         return $this;
     }
 
-
-
     /**
-     * start div
+     * Ajoute une balise d'ouverture HTML div
      *
      * @param array $attributs
      * @return self
@@ -52,14 +52,14 @@ abstract class Form
     public function startDiv(array $attributs = []): self
     {
         $this->formCode .= "<div";
+
         $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
 
         return $this;
     }
 
     /**
-     * end div
-     * ferme la balise HTML DIV
+     * Ajoute une balise de fermeture HTML div
      *
      * @return self
      */
@@ -70,10 +70,8 @@ abstract class Form
         return $this;
     }
 
-
-
     /**
-     * label
+     * Ajoute un label
      *
      * @param string $for
      * @param string $text
@@ -83,6 +81,7 @@ abstract class Form
     public function addLabel(string $for, string $text, array $attributs = []): self
     {
         $this->formCode .= "<label for=\"$for\"";
+
         $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
 
         $this->formCode .= "$text</label>";
@@ -90,10 +89,8 @@ abstract class Form
         return $this;
     }
 
-
-
     /**
-     * add input
+     * Ajoute un input
      *
      * @param string $type
      * @param string $name
@@ -102,33 +99,12 @@ abstract class Form
      */
     public function addInput(string $type, string $name, array $attributs = []): self
     {
-        $this->formCode .= "<input type=\"$type\" name =\"$name\"";
+        $this->formCode .= "<input type=\"$type\" name=\"$name\"";
+
         $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '/>' : '/>';
 
         return $this;
     }
-
-
-
-    /**
-     * add boutton
-     *
-     * @param string $text
-     * @param array $attributs
-     * @return self
-     */
-    public function addButton(string $text, array $attributs = []): self
-    {
-        $this->formCode .= "<button";
-        $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
-
-        $this->formCode .= "$text</button>";
-
-        return $this;
-    }
-
-
-
 
     /**
      * Ajoute les attributs envoyés à la balise html
@@ -139,46 +115,87 @@ abstract class Form
     public function addAttribute(array $attributs): string
     {
         $str = '';
-        // On défini les attribut HTML courts
-        $attributsCouts = ['checked', 'selected', 'required', 'disabled', 'readonluy', 'multiple', 'autofocus', 'novalidate', 'formnovalidate'];
 
+        // On définit les attributs HTML courts
+        $attributsCourts = ['checked', 'selected', 'required', 'disabled', 'readonly', 'multiple', 'autofocus', 'novalidate', 'formnovalidate'];
+
+        // On boucle sur le taleau d'attribut
         foreach ($attributs as $key => $value) {
             if ($value) {
-                if (in_array($key, $attributsCouts)) {
+                if (in_array($key, $attributsCourts)) {
                     $str .= " $key";
                 } else {
-                    $str .= " $key=\"$value\"";
+                    // On ajoute l'attribut = la valeur
+                    $str .= " $key='$value'";
                 }
             }
         }
+
         return $str;
     }
 
+    /**
+     * Ajout un textarea
+     *
+     * @param string $name
+     * @param array $attributs
+     * @param string|null $value
+     * @return self
+     */
+    public function addTextarea(string $name, array $attributs = [], ?string $value = null): self
+    {
+        $this->formCode .= "<textarea name=\"$name\"";
 
+        $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
+
+        $this->formCode .= $value . '</textarea>';
+
+        return $this;
+    }
+
+    /**
+     * Ajoute un bouton
+     *
+     * @param string $text
+     * @param array $attributs
+     * @return self
+     */
+    public function addButton(string $text, array $attributs = []): self
+    {
+        $this->formCode .= "<button";
+
+        $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
+
+        $this->formCode .= "$text</button>";
+
+        return $this;
+    }
 
     /**
      * Validation du formulaire (si tous les champs sont remplis)
      *
+     *  if (!empty($_POST['email']))
      * @param array $form Tableau issu du formulaire ($_POST || $_GET)
      * @param array $champs Tableau listant les champs obligatoires (['email', 'password'])
      * @return bool
      */
     public function validate(array $form, array $champs): bool
     {
-        // On boucle sur le tableau de champs obligateur
-
+        // On boucle sur le tableau de champs obligatoires
         foreach ($champs as $champ) {
+            // On vérifie si les champs obligatoires sont null
             if (empty($form[$champ]) || strlen(trim($form[$champ])) === 0) {
+                // Si oui, on retourne false car le formulaire n'est pas valide
                 return false;
             }
         }
-        // le formulaire n'ai pas vide on envoie true
+
+        // Le formulaire est valide on envoie true
         return true;
     }
 
-
     /**
-     * Renvoie le code HTML du formilaire en format string
+     * Renvoie le code HTML du formulaire en format string
      *
      * @return string
      */

@@ -4,21 +4,18 @@ namespace App\Core;
 
 use Attribute;
 
-#[Attribute()]
+#[Attribute]
 class Route
 {
     private ?string $controller = null;
     private ?string $action = null;
 
-
     public function __construct(
         private ?string $url = null,
         private ?string $name = null,
-        private array $method = []
+        private array $methods = []
     ) {
     }
-
-
 
     /**
      * Get the value of controller
@@ -117,25 +114,25 @@ class Route
     }
 
     /**
-     * Get the value of method
+     * Get the value of methods
      *
      * @return array
      */
-    public function getMethod(): array
+    public function getMethods(): array
     {
-        return $this->method;
+        return $this->methods;
     }
 
     /**
-     * Set the value of method
+     * Set the value of methods
      *
-     * @param array $method
+     * @param array $methods
      *
      * @return self
      */
-    public function setMethod(array $method): self
+    public function setMethods(array $methods): self
     {
-        $this->method = $method;
+        $this->methods = $methods;
 
         return $this;
     }
