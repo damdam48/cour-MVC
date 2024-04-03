@@ -1,4 +1,4 @@
-<section class="container mt2">
+<section class="container mt-2">
     <h1 class="text-center">Administration des articles</h1>
     <a href="/admin/articles/create" class="btn btn-primary my-2">Créer un article</a>
     <div class="row gy-4">
