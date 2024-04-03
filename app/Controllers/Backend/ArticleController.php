@@ -23,14 +23,14 @@ class ArticleController extends BaseController
         $this->render('Backend/Articles/index.php', [
             'articles' => $this->article->findAll(),
             'meta' => [
-                'title' => 'Administration des articles'
+                'title' => 'Administration des articles',
+                'js' => [
+                    '/assets/js/switchArticle.js',
+                ]
             ]
         ]);
     }
 
-
-
-    
     #[Route('/admin/articles/create', 'admin.articles.create', ['GET', 'POST'])]
     public function create(): void
     {
@@ -66,9 +66,6 @@ class ArticleController extends BaseController
             ]
         ]);
     }
-
-
-
 
     #[Route('/admin/articles/([0-9]+)/edit', 'admin.articles.edit', ['GET', 'POST'])]
     public function edit(int $id): void
@@ -114,9 +111,6 @@ class ArticleController extends BaseController
         ]);
     }
 
-
-
-
     #[Route('/admin/articles/delete', 'admin.articles.delete', ['POST'])]
     public function delete(): void
     {
@@ -134,5 +128,35 @@ class ArticleController extends BaseController
         }
 
         $this->redirect('/admin/articles');
+    }
+
+    #[Route('/admin/articles/([0-9]+)/switch', 'admin.articles.swith', ['GET'])]
+    public function swith(int $id): void
+    {
+        header('Content-Type:application/json');
+
+        $article = $this->article->find($id);
+
+        if (!$article) {
+            http_response_code(404);
+            echo json_encode([
+                'status' => 404,
+                'message' => "Article non trouvé",
+            ]);
+            exit;
+        }
+        $article
+            ->setEnable(!$article->getEnable())
+            ->update();
+
+            http_response_code(201);
+
+        echo json_encode([
+            'status' => 201,
+            'message' => 'Visibility changed',
+            'enable' => (bool) $article->getEnable(),
+        ]);
+
+            
     }
 }

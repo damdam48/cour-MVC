@@ -3,8 +3,8 @@
 namespace App\Form;
 
 use App\Core\Form;
-use App\Models\User;
 use App\Models\Article;
+use App\Models\User;
 
 class ArticleForm extends Form
 {
@@ -37,22 +37,22 @@ class ArticleForm extends Form
             )
             ->endDiv();
 
-            if ($article) {
-                $this
+        if ($article) {
+            $this
                 ->startDiv(['class' => 'mb-3'])
                 ->addLabel('user', 'Auteur', ['class' => 'form-label'])
                 ->addSelect(
                     'user',
-                    $this->user->findForSelect(),
+                    $this->user->findForSelect($article ? $article->getUserId() : null),
                     [
                         'class' => 'form-control',
                         'id' => 'user',
                     ]
                 )
                 ->endDiv();
-            }
-            
-            $this->startDiv(['class' => 'mb-3 form-check'])
+        }
+
+        $this->startDiv(['class' => 'mb-3 form-check'])
             ->addInput('checkbox', 'enable', [
                 'class' => 'form-check-input',
                 'checked' => $article ? (bool) $article->getEnable() : null,

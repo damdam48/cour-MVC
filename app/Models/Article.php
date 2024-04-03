@@ -20,6 +20,13 @@ class Article extends Model
         $this->table = 'articles';
     }
 
+    public function getAuthor(): User
+    {
+        $user = $this->runQuery("SELECT * FROM users WHERE id = :id", ['id' => $this->userId])->fetch();
+
+        return (new User)->hydrate($user);
+    }
+
     /**
      * Get the value of id
      *
@@ -227,27 +234,27 @@ class Article extends Model
         return $text;
     }
 
-        /**
-         * Get the value of userId
-         *
-         * @return ?int
-         */
-        public function getUserId(): ?int
-        {
-                return $this->userId;
-        }
+    /**
+     * Get the value of userId
+     *
+     * @return ?int
+     */
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
 
-        /**
-         * Set the value of userId
-         *
-         * @param ?int $userId
-         *
-         * @return self
-         */
-        public function setUserId(?int $userId): self
-        {
-                $this->userId = $userId;
+    /**
+     * Set the value of userId
+     *
+     * @param ?int $userId
+     *
+     * @return self
+     */
+    public function setUserId(?int $userId): self
+    {
+        $this->userId = $userId;
 
-                return $this;
-        }
+        return $this;
+    }
 }

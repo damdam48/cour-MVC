@@ -106,32 +106,6 @@ abstract class Form
         return $this;
     }
 
-
-
-
-
-    public function addSelect(string $name, array $choices, array $attributs = []): self
-    {
-        $this->formCode .="<select name=\"$name\"";
-        $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
-        foreach ($choices as $value => $choice) {
-            $this->formCode .= "<option value=\"$value\"";
-
-            $this->formCode .= !empty($choice['attributs']) ? $this->addAttribute($choice['attributs']) . '>' : '>';
-
-            $this->formCode .= "$choice[label]</option>";
-        }
-
-        $this->formCode .= '</select>';
-
-        return $this;
-    }
-
-
-
-
-
-
     /**
      * Ajoute les attributs envoyés à la balise html
      *
@@ -175,6 +149,42 @@ abstract class Form
         $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
 
         $this->formCode .= $value . '</textarea>';
+
+        return $this;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param string $name
+     * @param array $choices [
+     *      [
+     *          '1' => [
+     *              'label' => 'Pierre',
+     *              'attributs' => ['class' => 'toto']
+     *          ],
+     *          '2' => [
+     *              'label' => 'Paul',
+     *              'attributs' => ['class' => 'toto']
+     *          ],
+     *      ]
+     * ]
+     * @param array $attributs
+     * @return self
+     */
+    public function addSelect(string $name, array $choices, array $attributs = []): self
+    {
+        $this->formCode .= "<select name=\"$name\"";
+
+        $this->formCode .= !empty($attributs) ? $this->addAttribute($attributs) . '>' : '>';
+
+        foreach ($choices as $value => $choice) {
+            $this->formCode .= "<option value=\"$value\"";
+            $this->formCode .= !empty($choice['attributs']) ? $this->addAttribute($choice['attributs']) . '>' : '>';
+            $this->formCode .= "$choice[label]</option>";
+        }
+
+        $this->formCode .= '</select>';
 
         return $this;
     }
